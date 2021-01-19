@@ -5,7 +5,9 @@ import type { Extracted } from '../interfaces'
 const vnVietnamnetV1 = (html: string): Extracted | null => {
   const $ = cheerio.load(html)
 
-  const body = $('.ArticleContent').html()?.trim() ?? ''
+  const body = $('.ArticleContent').html()?.trim() ??
+    $('.Magazine-Acticle').html()?.trim() ??
+    ''
   if (body.length === 0) return null
   const extractor = __filename
 
