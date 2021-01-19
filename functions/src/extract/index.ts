@@ -10,7 +10,7 @@ const extractors: ExtractorItem[] = [
     extract: vnComDantriV1
   },
   {
-    pattern: RegExp('^https://vietnamnet.vn/.+$'),
+    pattern: RegExp('^https://[^/]*vietnamnet.vn/.+$'),
     extract: vnVietnamnetV1
   },
   {
