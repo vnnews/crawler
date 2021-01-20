@@ -34,11 +34,12 @@ const crawlArticle = async (url: string): Promise<void> => {
   const extracted = extract(ogUrl, response.data)
   const hasMetadata = Object.keys(metadata).length > 0
   const hasExtracted = extracted !== null
+
   const logPayload: any = {
     article_url: url,
-    og_url: ogUrl,
     has_metadata: hasMetadata,
-    has_extracted: hasExtracted
+    has_extracted: hasExtracted,
+    og_url: ogUrl
   }
 
   if (hasExtracted) {
@@ -47,12 +48,23 @@ const crawlArticle = async (url: string): Promise<void> => {
       tags_length: extracted?.tags?.length ?? 0
     }
 
-    await firestore.setArticle({
+    const article = {
       url: ogUrl,
       metadata,
       body: extracted?.body ?? '',
       tags: extracted?.tags
-    })
+    }
+
+    const existingArticle = await firestore.getArticleByUrl(article.url)
+    const isNew = typeof existingArticle === 'undefined'
+
+    if (isNew) {
+      await firestore.createArticle(article)
+      logPayload.create_article = true
+    } else {
+      await firestore.setArticle(article)
+      logPayload.set_article = true
+    }
 
     logger.log('crawlArticle OK', logPayload)
   } else {

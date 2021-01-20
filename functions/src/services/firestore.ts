@@ -25,37 +25,38 @@ const articles = (): admin.firestore.CollectionReference => firestore().collecti
 const sanitizeArticleId = (url: string): string => url.replace(/[:/]+/g, '_')
 
 export default {
-  getArticleByUrl: async (url: string): Promise<Article> => {
+  getArticleByUrl: async (url: string): Promise<Article | undefined> => {
     const documentPath = sanitizeArticleId(url)
     const doc = await articles().doc(documentPath).get()
+    if (!doc.exists) return undefined
+
     return { ...(doc.data() as Article), _id: doc.id }
+  },
+  createArticle: async (article: Article) => {
+    if (isProduction) {
+      const documentPath = sanitizeArticleId(article.url)
+      const timestamp = admin.firestore.FieldValue.serverTimestamp()
+      await articles().doc(documentPath).create(
+        {
+          ...article,
+          first_timestamp: timestamp,
+          timestamp
+        }
+      )
+    } else {
+      console.log('firestore.createArticle', article)
+    }
   },
   setArticle: async (article: Article) => {
     if (isProduction) {
       const documentPath = sanitizeArticleId(article.url)
-      const { url, metadata, body, tags } = article
+      const timestamp = admin.firestore.FieldValue.serverTimestamp()
       await articles().doc(documentPath).set(
-        {
-          url,
-          metadata,
-          body,
-          tags,
-
-          first_timestamp: admin.firestore.FieldValue.serverTimestamp(),
-          timestamp: admin.firestore.FieldValue.serverTimestamp()
-        },
-        {
-          mergeFields: [
-            'url',
-            'metadata',
-            'body',
-            'tags',
-            'timestamp'
-          ]
-        }
+        { ...article, timestamp },
+        { merge: true }
       )
     } else {
-      console.log('firestore.setArticle', article)
+      console.log('firestore.updateArticle', article)
     }
   }
 }
