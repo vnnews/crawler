@@ -3,6 +3,7 @@ import * as cheerio from 'cheerio'
 
 import extract from '../extract'
 import { isBlacklisted } from '../knowledge'
+import { Article } from '../models'
 import { firestore, logger } from '../services'
 
 const crawlArticle = async (url: string): Promise<void> => {
@@ -48,7 +49,7 @@ const crawlArticle = async (url: string): Promise<void> => {
       tags_length: extracted?.tags?.length ?? 0
     }
 
-    const article = {
+    const article: Article = {
       url: ogUrl,
       metadata,
       body: extracted?.body ?? '',
@@ -56,17 +57,24 @@ const crawlArticle = async (url: string): Promise<void> => {
     }
 
     const existingArticle = await firestore.getArticleByUrl(article.url)
-    const isNew = typeof existingArticle === 'undefined'
-
-    if (isNew) {
+    if (typeof existingArticle === 'undefined') {
       await firestore.createArticle(article)
-      logPayload.create_article = true
+      logger.log('createArticle OK', logPayload)
     } else {
-      await firestore.setArticle(article)
-      logPayload.set_article = true
-    }
+      const hasHistory = article.body !== existingArticle.body
+      if (hasHistory) {
+        article.has_history = true
+      }
 
-    logger.log('crawlArticle OK', logPayload)
+      await firestore.setArticle(article)
+
+      if (hasHistory) {
+        await firestore.createArticleHistory(existingArticle)
+        logger.log('createArticleHistory OK', logPayload)
+      } else {
+        logger.log('setArticle OK', logPayload)
+      }
+    }
   } else {
     logger.error('crawlArticle failed', logPayload)
   }
