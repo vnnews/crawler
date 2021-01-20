@@ -1,4 +1,5 @@
 import blacklist from './blacklist'
+import config from './config'
 
 const isBlacklisted = (url: string): boolean => {
   if (blacklist.urls.includes(url)) return true
@@ -8,4 +9,4 @@ const isBlacklisted = (url: string): boolean => {
   return false
 }
 
-export { isBlacklisted }
+export { config, isBlacklisted }
