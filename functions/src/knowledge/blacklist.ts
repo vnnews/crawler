@@ -134,6 +134,7 @@ const urls = [
   'https://dantri.com.vn/van-hoa/hat-giong-tam-hon.htm',
   'https://dantri.com.vn/van-hoa/huong-vi-viet.htm',
   'https://dantri.com.vn/van-hoa/san-khau-dan-gian.htm',
+  'https://dantri.com.vn/van-hoa/tet-doan-vien.htm',
   'https://dantri.com.vn/van-hoa/van-hoc.htm',
   'https://dantri.com.vn/video-page.htm',
   'https://dantri.com.vn/xa-hoi.htm',
