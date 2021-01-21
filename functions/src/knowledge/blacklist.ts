@@ -1,6 +1,8 @@
 const patterns = [
   RegExp('^https://dantri.com.vn/event/.+$'),
   RegExp('^https://dantri.com.vn/video/.+$'),
+  RegExp('^https://tuoitre.vn/.*(?<!-\\d{17}.htm)$'),
+  RegExp('^https://tuoitre.vn/lang-kinh-24g-.+$'),
   RegExp('^https://vietnamnet.vn/.*(?<!.html)$'),
   RegExp('^https://vietnamnet.vn/vn/su-kien/.+$'),
   RegExp('^https://vnexpress.net/.*(?<!.html)$'),
