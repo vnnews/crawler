@@ -6,6 +6,7 @@ import { isProduction } from './firebase'
 export interface GetArticlesConditions {
   afterMillis?: number
   beforeMillis?: number
+  limit?: number
 }
 
 let _firestore: admin.firestore.Firestore
@@ -45,6 +46,9 @@ export default {
     }
     if (typeof conditions?.beforeMillis === 'number') {
       query = query.where(articleFirstTimestamp, '<', admin.firestore.Timestamp.fromMillis(conditions.beforeMillis))
+    }
+    if (typeof conditions?.limit === 'number') {
+      query = query.limit(conditions.limit)
     }
 
     const docs = await query.get()
