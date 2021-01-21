@@ -3,6 +3,11 @@ import * as admin from 'firebase-admin'
 import { Article } from '../models'
 import { isProduction } from './firebase'
 
+export interface GetArticlesConditions {
+  afterMillis?: number
+  beforeMillis?: number
+}
+
 let _firestore: admin.firestore.Firestore
 export const firestore = (): admin.firestore.Firestore => {
   if (typeof _firestore !== 'undefined') return _firestore
@@ -12,9 +17,13 @@ export const firestore = (): admin.firestore.Firestore => {
 }
 
 const articles = (): admin.firestore.CollectionReference => firestore().collection('articles')
+const articleTimestamp = 'timestamp'
+const articleFirstTimestamp = 'first_timestamp'
 const sanitizeArticleId = (url: string): string => url.replace(/[:/]+/g, '_')
 
 const histories = (article: admin.firestore.DocumentReference): admin.firestore.CollectionReference => article.collection('histories')
+const historyBody = 'body'
+const historyTimestamp = 'timestamp'
 
 export default {
   getArticleByUrl: async (url: string): Promise<Article | undefined> => {
@@ -28,6 +37,19 @@ export default {
       return undefined
     }
   },
+  getArticles: async (conditions?: GetArticlesConditions): Promise<Article[]> => {
+    let query = articles().orderBy(articleFirstTimestamp, 'desc')
+
+    if (typeof conditions?.afterMillis === 'number') {
+      query = query.where(articleFirstTimestamp, '>', admin.firestore.Timestamp.fromMillis(conditions.afterMillis))
+    }
+    if (typeof conditions?.beforeMillis === 'number') {
+      query = query.where(articleFirstTimestamp, '<', admin.firestore.Timestamp.fromMillis(conditions.beforeMillis))
+    }
+
+    const docs = await query.get()
+    return docs.docs.map((doc) => ({ ...(doc.data() as Article), _id: doc.id }))
+  },
   createArticle: async (article: Article) => {
     if (isProduction) {
       const documentPath = sanitizeArticleId(article.url)
@@ -35,8 +57,8 @@ export default {
       await articles().doc(documentPath).create(
         {
           ...article,
-          first_timestamp: timestamp,
-          timestamp
+          [articleFirstTimestamp]: timestamp,
+          [articleTimestamp]: timestamp
         }
       )
     } else {
@@ -48,7 +70,7 @@ export default {
       const documentPath = sanitizeArticleId(article.url)
       const timestamp = admin.firestore.FieldValue.serverTimestamp()
       await articles().doc(documentPath).set(
-        { ...article, timestamp },
+        { ...article, [articleTimestamp]: timestamp },
         { merge: true }
       )
     } else {
@@ -60,8 +82,8 @@ export default {
       const articleDoc = articles().doc(sanitizeArticleId(article.url))
       await histories(articleDoc).doc().create(
         {
-          body: article.body,
-          timestamp: article.timestamp
+          [historyBody]: article.body,
+          [historyTimestamp]: article.timestamp
         }
       )
     } else {
