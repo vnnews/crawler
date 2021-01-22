@@ -5,6 +5,7 @@ import _step2CrawlSite from './steps/step2_crawl_site'
 import _step3CrawlArticle from './steps/step3_crawl_article'
 import _step4ExportBody from './steps/step4_export_body'
 import apiArticles from './api/articles'
+import apiStatistics from './api/statistics'
 
 const region = 'asia-east2'
 const pubsubRuntimeOptions = { timeoutSeconds: 540 }
@@ -32,3 +33,5 @@ const httpRuntimeOptions = { timeoutSeconds: 30 }
 const https = runWith(httpRuntimeOptions).region(region).https
 
 export const articles = https.onRequest(apiArticles)
+
+export const statistics = https.onRequest(apiStatistics)

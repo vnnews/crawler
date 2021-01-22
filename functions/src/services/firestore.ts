@@ -6,6 +6,7 @@ import { isProduction } from './firebase'
 export interface GetArticlesConditions {
   afterMillis?: number
   beforeMillis?: number
+  fields?: string[]
   limit?: number
 }
 
@@ -49,6 +50,9 @@ export default {
     }
     if (typeof conditions?.limit === 'number') {
       query = query.limit(conditions.limit)
+    }
+    if (typeof conditions?.fields === 'object') {
+      query = query.select(...conditions.fields)
     }
 
     const docs = await query.get()
