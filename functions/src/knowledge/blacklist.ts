@@ -108,6 +108,7 @@ const urls = [
   'https://dantri.com.vn/tam-long-nhan-ai/hoan-canh.htm',
   'https://dantri.com.vn/the-gioi.htm',
   'https://dantri.com.vn/the-gioi/bau-cu-tong-thong-my-2020.htm',
+  'https://dantri.com.vn/the-gioi/bau-cu-tong-thong-my-2020/phan-tich.htm',
   'https://dantri.com.vn/the-gioi/chau-a.htm',
   'https://dantri.com.vn/the-gioi/chau-my.htm',
   'https://dantri.com.vn/the-gioi/diem-nong.htm',
