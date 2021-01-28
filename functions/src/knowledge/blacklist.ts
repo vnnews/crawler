@@ -148,6 +148,10 @@ const urls = [
   'https://dantri.com.vn/xa-hoi/moi-truong.htm',
   'https://dantri.com.vn/xa-hoi/phong-su-ky-su.htm',
   'https://vietnamnet.vn/',
+  'https://vietnamnet.vn/vn/kinh-doanh/thi-truong/con-bien-dong-cua-dao-rung-tet-tan-suu-2021-708110.html',
+  'https://vietnamnet.vn/vn/thoi-su/bang-tuyet-xuat-hien-nhieu-noi-o-mien-bac-704516.html',
+  'https://vietnamnet.vn/vn/thoi-su/vu-an-nhat-cuong-va-cuu-chu-tich-ha-noi-nguyen-duc-chung-708198.html',
+  'https://vietnamnet.vn/vn/thoi-su/thanh-pho-thu-duc-dong-luc-vuon-toi-tuong-lai-708184.html',
   'https://vnexpress.net/'
 ]
 
