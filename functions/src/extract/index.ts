@@ -1,5 +1,6 @@
 import vnComDantriV1 from './dantri.com.vn/v1'
 import vnTuoitreV1 from './tuoitre.vn/v1'
+import vnTuoitreVideoV1 from './tuoitre.vn/video/v1'
 import vnVietnamnetV1 from './vietnamnet.vn/v1'
 import netVnexpressV1 from './vnexpress.net/v1'
 
@@ -13,6 +14,10 @@ const extractors: ExtractorItem[] = [
   {
     pattern: RegExp('^https://[^/]*tuoitre.vn/.+$'),
     extract: vnTuoitreV1
+  },
+  {
+    pattern: RegExp('^https://[^/]*tuoitre.vn/.+$'),
+    extract: vnTuoitreVideoV1
   },
   {
     pattern: RegExp('^https://[^/]*vietnamnet.vn/.+$'),
