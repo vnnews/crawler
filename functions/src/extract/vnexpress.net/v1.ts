@@ -18,7 +18,7 @@ const netVnexpressV1 = (html: string): Extracted | null => {
   const body = (description.length > 0 ? `<div class="${descriptionClass}">${description}</div>\n\n` : '') + `<article class="${articleClass}">${article}</article>`
   const extractor = __filename
 
-  return { body, extractor, type: "text" }
+  return { body, extractor, type: 'text' }
 }
 
 export default netVnexpressV1

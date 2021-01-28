@@ -19,7 +19,7 @@ const vnTuoitreVideoV1 = (html: string): Extracted | null => {
     if (text.length > 0) tags.push(text)
   })
 
-  return { body, extractor, tags, type: "video" }
+  return { body, extractor, tags, type: 'video' }
 }
 
 export default vnTuoitreVideoV1

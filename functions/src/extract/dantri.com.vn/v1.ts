@@ -21,7 +21,7 @@ const vnComDantriV1 = (html: string): Extracted | null => {
     tags.push($(e).text())
   })
 
-  return { body, extractor, tags, type: "text" }
+  return { body, extractor, tags, type: 'text' }
 }
 
 export default vnComDantriV1

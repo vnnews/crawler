@@ -17,7 +17,7 @@ const vnVietnamnetV1 = (html: string): Extracted | null => {
     tags.push($(e).text())
   })
 
-  return { body, extractor, tags, type: "text" }
+  return { body, extractor, tags, type: 'text' }
 }
 
 export default vnVietnamnetV1

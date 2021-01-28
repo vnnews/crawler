@@ -10,5 +10,5 @@ export interface Article {
   has_history?: boolean
   metadata: { [key: string]: string }
   tags?: string[]
-  type: "text" | "video"
+  type?: 'text' | 'video'
 }

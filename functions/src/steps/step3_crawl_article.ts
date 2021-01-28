@@ -55,7 +55,7 @@ const crawlArticle = async (url: string): Promise<void> => {
       metadata,
       body: extracted?.body ?? '',
       tags: extracted?.tags,
-      type: extracted!.type
+      type: extracted?.type
     }
 
     const existingArticle = await firestore.getArticleByUrl(article.url)
