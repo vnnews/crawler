@@ -25,7 +25,7 @@ export const step3CrawlArticle = pubsub.topic('crawler.crawl_article').onPublish
   await _step3CrawlArticle(url)
 })
 
-export const step4ExportBody = pubsub.schedule('every 28800 minutes').onRun(async (_) => {
+export const step4ExportBody = pubsub.schedule('every 480 minutes').onRun(async (_) => {
   await _step4ExportBody('vietnamese-news-exports')
 })
 
