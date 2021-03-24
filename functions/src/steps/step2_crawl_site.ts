@@ -3,10 +3,10 @@ import * as cheerio from 'cheerio'
 import { URL } from 'url'
 
 import { config, isBlacklisted } from '../knowledge'
-import { logger, firestore, pubsub } from '../services'
+import { logger, firestore } from '../services'
 
 const crawlSite = async (url: string): Promise<void> => {
-  logger.log('crawlSite starting...', { url })
+  logger.debug('crawlSite starting...', { url })
   const response = await axios.get<string>(url, {
     responseType: 'text'
   })
@@ -34,15 +34,15 @@ const crawlSite = async (url: string): Promise<void> => {
   for (const href of hrefSet) {
     found++
     if (crawlArticleAgainAfterMillis > 0) {
-      const article = await firestore.getArticleByUrl(href)
-      const ms = article?.timestamp?.toMillis()
+      const link = await firestore.getLink(href)
+      const ms = link?.last_timestamp?.toMillis()
       if (typeof ms === 'number' && ms > Date.now() - crawlArticleAgainAfterMillis) {
         fresh++
         continue
       }
     }
 
-    await pubsub.crawlArticle(href)
+    await firestore.setLink({ type: 'article', url: href })
     scheduled++
   }
 
@@ -53,7 +53,7 @@ const crawlSite = async (url: string): Promise<void> => {
     article_urls_scheduled: scheduled
   }
   if (found > 0) {
-    logger.log('crawlSite OK', logPayload)
+    logger.info('crawlSite OK', logPayload)
   } else {
     logger.error('crawlSite failed', logPayload)
   }
@@ -63,6 +63,6 @@ export default crawlSite
 
 if (require.main === module) {
   const url = process.argv[2]
-  logger.log({ url })
+  logger.debug({ url })
   crawlSite(url).then((_) => { }, (e) => console.error(e))
 }

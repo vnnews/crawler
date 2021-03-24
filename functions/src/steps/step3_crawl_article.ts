@@ -11,7 +11,7 @@ const crawlArticle = async (url: string): Promise<void> => {
     logger.warn('crawlArticle skipped blacklisted URL', { url })
     return
   } else {
-    logger.log('crawlArticle starting...', { url })
+    logger.debug('crawlArticle starting...', { url })
   }
 
   const response = await axios.get<string>(url, {
@@ -61,20 +61,15 @@ const crawlArticle = async (url: string): Promise<void> => {
     const existingArticle = await firestore.getArticleByUrl(article.url)
     if (typeof existingArticle === 'undefined') {
       await firestore.createArticle(article)
-      logger.log('createArticle OK', logPayload)
+      logger.warn('createArticle OK', logPayload)
     } else {
-      const hasHistory = article.body !== existingArticle.body
-      if (hasHistory) {
+      if (article.body !== existingArticle.body) {
         article.has_history = true
-      }
-
-      await firestore.setArticle(article)
-
-      if (hasHistory) {
+        await firestore.setArticle(article)
         await firestore.createArticleHistory(existingArticle)
-        logger.log('createArticleHistory OK', logPayload)
+        logger.info('createArticleHistory OK', logPayload)
       } else {
-        logger.log('setArticle OK', logPayload)
+        logger.debug('crawlArticle OK', logPayload)
       }
     }
   } else {
@@ -86,6 +81,6 @@ export default crawlArticle
 
 if (require.main === module) {
   const url = process.argv[2]
-  logger.log({ url })
+  logger.debug({ url })
   crawlArticle(url).then((_) => { }, (e) => console.error(e))
 }

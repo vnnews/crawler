@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin'
 
-import { Article } from '../models'
+import { Article, Link } from '../models'
 import { isProduction } from './firebase'
 
 export interface GetArticlesConditions {
@@ -18,19 +18,23 @@ export const firestore = (): admin.firestore.Firestore => {
   return _firestore
 }
 
+const sanitizeUrl = (url: string): string => url.replace(/[:/]+/g, '_')
+
 const articles = (): admin.firestore.CollectionReference => firestore().collection('articles')
 const articleTimestamp = 'timestamp'
 const articleFirstTimestamp = 'first_timestamp'
-const sanitizeArticleId = (url: string): string => url.replace(/[:/]+/g, '_')
 
 const histories = (article: admin.firestore.DocumentReference): admin.firestore.CollectionReference => article.collection('histories')
 const historyBody = 'body'
 const historyTimestamp = 'timestamp'
 
+const links = (): admin.firestore.CollectionReference => firestore().collection('links')
+const linkLastTimestamp = 'last_timestamp'
+
 export default {
   getArticleByUrl: async (url: string): Promise<Article | undefined> => {
     if (isProduction) {
-      const documentPath = sanitizeArticleId(url)
+      const documentPath = sanitizeUrl(url)
       const doc = await articles().doc(documentPath).get()
       if (!doc.exists) return undefined
 
@@ -60,7 +64,7 @@ export default {
   },
   createArticle: async (article: Article) => {
     if (isProduction) {
-      const documentPath = sanitizeArticleId(article.url)
+      const documentPath = sanitizeUrl(article.url)
       const timestamp = admin.firestore.FieldValue.serverTimestamp()
       await articles().doc(documentPath).create(
         {
@@ -75,19 +79,19 @@ export default {
   },
   setArticle: async (article: Article) => {
     if (isProduction) {
-      const documentPath = sanitizeArticleId(article.url)
+      const documentPath = sanitizeUrl(article.url)
       const timestamp = admin.firestore.FieldValue.serverTimestamp()
       await articles().doc(documentPath).set(
         { ...article, [articleTimestamp]: timestamp },
         { merge: true }
       )
     } else {
-      console.log('firestore.updateArticle', article)
+      console.log('firestore.setArticle', article)
     }
   },
   createArticleHistory: async (article: Article) => {
     if (isProduction) {
-      const articleDoc = articles().doc(sanitizeArticleId(article.url))
+      const articleDoc = articles().doc(sanitizeUrl(article.url))
       await histories(articleDoc).doc().create(
         {
           [historyBody]: article.body,
@@ -96,6 +100,29 @@ export default {
       )
     } else {
       console.log('firestore.createArticleHistory', article)
+    }
+  },
+  getLink: async (url: string): Promise<Link | undefined> => {
+    if (isProduction) {
+      const documentPath = sanitizeUrl(url)
+      const doc = await links().doc(documentPath).get()
+      if (!doc.exists) return undefined
+
+      return { ...(doc.data() as Link), _id: doc.id }
+    } else {
+      return undefined
+    }
+  },
+  setLink: async (link: Link) => {
+    if (isProduction) {
+      const documentPath = sanitizeUrl(link.url)
+      const timestamp = admin.firestore.FieldValue.serverTimestamp()
+      await links().doc(documentPath).set(
+        { ...link, [linkLastTimestamp]: timestamp },
+        { merge: true }
+      )
+    } else {
+      console.log('firestore.setLink', link)
     }
   }
 }

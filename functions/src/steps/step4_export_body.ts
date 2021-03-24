@@ -6,7 +6,7 @@ const exportBody = async (bucketName: string): Promise<void> => {
   const fileName = `exportBody/${afterMillis}.txt`
   const logPayload: any = { bucketName, afterMillis }
   if (await storage.exists(bucketName, fileName)) {
-    logger.log('exportBody skipped', logPayload)
+    logger.debug('exportBody skipped', logPayload)
     return
   }
 
@@ -23,7 +23,7 @@ const exportBody = async (bucketName: string): Promise<void> => {
 
   if (data.length > 0) {
     await storage.save(bucketName, fileName, data)
-    logger.log('exportBody OK', logPayload)
+    logger.info('exportBody OK', logPayload)
   } else {
     logger.error('exportBody failed', logPayload)
   }

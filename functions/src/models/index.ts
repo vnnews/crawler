@@ -12,3 +12,11 @@ export interface Article {
   tags?: string[]
   type?: 'text' | 'video'
 }
+
+export interface Link {
+  _id?: string
+  last_timestamp?: admin.firestore.Timestamp
+
+  url: string
+  type: 'site' | 'article'
+}

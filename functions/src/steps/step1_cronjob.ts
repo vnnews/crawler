@@ -1,4 +1,4 @@
-import { pubsub } from '../services'
+import { firestore } from '../services'
 
 const sites = [
   'https://dantri.com.vn',
@@ -9,7 +9,7 @@ const sites = [
 
 const cronjob = async (): Promise<void> => {
   for (const site of sites) {
-    await pubsub.crawlSite(site)
+    await firestore.setLink({ type: 'site', url: site })
   }
 }
 
